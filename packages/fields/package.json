@@ -1,5 +1,5 @@
 {
-  "name": "@living-motion/emitters",
+  "name": "@living-motion/fields",
   "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,6 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@living-motion/core": "0.1.0",
-    "three": "^0.177.0"
+    "@living-motion/core": "0.1.0"
   }
 }

@@ -4,6 +4,9 @@
     { "path": "packages/core" },
     { "path": "packages/solvers" },
     { "path": "packages/react" },
-    { "path": "packages/emitters" }
+    { "path": "packages/emitters" },
+    { "path": "packages/fields" },
+    { "path": "packages/materials" },
+    { "path": "packages/post" }
   ]
 }
