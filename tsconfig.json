@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/solvers" },
+    { "path": "packages/react" }
+  ]
+}
