@@ -71,7 +71,7 @@ root/
 
 ### 3 · 🧠 TSL Authoring Playbook
 
-1. **Prefer **``** + **`` over ad‑hoc Node chains to improve WGSL readability.
+1. **Prefer** `Fn` + `Struct` over ad‑hoc Node chains to improve WGSL readability.
 2. **Prefix library symbols** with package name to avoid collisions (`LM_Noise.curl3d`).
 3. **Expose metadata** via static export:
 
@@ -86,8 +86,10 @@ export const meta = {
 };
 ```
 
-GUI generators pick up `meta.params` to auto‑build Tweakpane. 4. **Use **`` for unavoidable WGSL loops that trigger Chromium warnings.\
-5\. **Document math** with LaTeX block in JSDoc so Typedoc renders formulas in site.
+GUI generators pick up `meta.params` to auto‑build Tweakpane.
+
+4. **Use** `LoopNode` for unavoidable WGSL loops that trigger Chromium warnings.
+5. **Document math** with LaTeX block in JSDoc so Typedoc renders formulas in site.
 
 #### 💡 Boilerplate — Creating a New Compute Solver
 

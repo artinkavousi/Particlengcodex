@@ -34,7 +34,7 @@ We aim to build an **open‑source, GPU‑native biosphere simulator** where eve
 
 ### 1 · **Particle Schema: Deep GPU Layout**
 
-Below is the canonical ``** generator** output—extended with bandwidth considerations and mobile tier fall‑backs.
+Below is the canonical `particle-schema` generator output—extended with bandwidth considerations and mobile tier fall‑backs.
 
 | Field          | Type (desktop) | Mobile Tier B | Purpose & Implementation Notes                                       |
 | -------------- | -------------- | ------------- | -------------------------------------------------------------------- |
