@@ -17,6 +17,10 @@ export default class ParticleEngine {
   readonly scheduler: Scheduler;
   readonly uniformBridge: UniformBridge;
 
+  addSolver(solver: { update(pool: ParticlePool, dt: number): void }) {
+    this.scheduler.add((dt) => solver.update(this.pool, dt));
+  }
+
   constructor(opts: EngineOptions) {
     this.renderer = new WebGPURenderer({ canvas: opts.canvas });
     this.scene = new Scene();
