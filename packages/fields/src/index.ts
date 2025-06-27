@@ -1,3 +1,5 @@
-export { default as CurlNoiseField } from './CurlNoiseField.js';
-export { default as DipoleField } from './DipoleField.js';
-export { default as SDFGradientField } from './SDFGradientField.js';
+export { default as CurlNoiseField } from './CurlNoiseField.js'
+export { default as DipoleField } from './DipoleField.js'
+export { default as SDFGradientField } from './SDFGradientField.js'
+export { default as RadialField } from './RadialField.js'
+export { default as VortexField } from './VortexField.js'
