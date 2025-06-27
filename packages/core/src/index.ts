@@ -1,4 +1,7 @@
-export { default as ParticleEngine } from './ParticleEngine.js';
-export { default as ParticlePool } from './ParticlePool.js';
-export { default as Scheduler } from './Scheduler.js';
-export { default as UniformBridge } from './UniformBridge.js';
+export { default as ParticleEngine } from './ParticleEngine.js'
+export { default as ParticlePool } from './ParticlePool.js'
+export { default as Scheduler } from './Scheduler.js'
+export { default as UniformBridge } from './UniformBridge.js'
+export { default as ComponentRegistry } from './ComponentRegistry.js'
+export { gpuAssert } from './GPUAssert.js'
+export * as MathNodes from './MathNodes.js'
