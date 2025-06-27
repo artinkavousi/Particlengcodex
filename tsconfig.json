@@ -3,6 +3,7 @@
   "references": [
     { "path": "packages/core" },
     { "path": "packages/solvers" },
-    { "path": "packages/react" }
+    { "path": "packages/react" },
+    { "path": "packages/emitters" }
   ]
 }

@@ -18,7 +18,15 @@ export default class ParticleEngine {
   readonly uniformBridge: UniformBridge;
 
   addSolver(solver: { update(pool: ParticlePool, dt: number): void }) {
-    this.scheduler.add((dt) => solver.update(this.pool, dt));
+    const step = (dt: number) => solver.update(this.pool, dt);
+    this.scheduler.add(step);
+    return () => this.scheduler.remove(step);
+  }
+
+  addEmitter(emitter: { update(pool: ParticlePool, dt: number): void }) {
+    const step = (dt: number) => emitter.update(this.pool, dt);
+    this.scheduler.add(step);
+    return () => this.scheduler.remove(step);
   }
 
   constructor(opts: EngineOptions) {
