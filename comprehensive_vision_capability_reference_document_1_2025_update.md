@@ -50,7 +50,7 @@ Below is the canonical `particle-schema` generator output—extended with bandwi
 | `emotion`      | `vec4<f32>`    | `vec4<f16>`   | (joy, anger, fear, calm) – maps to colour / jitter / solver weights. |
 | `userA‑D`      | `vec4<f32>`    | user‑defined  | 4 free vec4s for custom modules (wave phase, trail idx, etc.).       |
 
-A ``** factory** autogenerates WGSL `struct Particle { … };` and the matching JS typed‑array view, ensuring alignment paddings (std430) match across browsers (see Section *2.3 in **`WEBGPU_AND_GPGPU.md`*).
+A `particle-schema` factory autogenerates WGSL `struct Particle { … };` and the matching JS typed‑array view, ensuring alignment paddings (std430) match across browsers (see Section *2.3 in **`WEBGPU_AND_GPGPU.md`*).
 
 **Memory Footprint**: default desktop layout = 112 bytes/particle → 10 M particles ≈ 1.07 GB VRAM; mobile tier truncates half‑floats, hitting ≈ 540 MB.  Developers may toggle the *lite layout preset* via:
 

@@ -58,7 +58,7 @@ root/
 | File                   | Purpose                                                                                     | Notes                                                                                |
 | ---------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `ParticleEngine.ts`    | Public API: init renderer, create pools, attach solvers, `tick()` / `start()` / `dispose()` | Tiny facade; no framework deps.                                                      |
-| `ParticlePool.ts`      | Manages **TSL **`` for pos/vel/etc.; double‑buffer if WebGL fallback.                       | Automatically pads to 16 bytes; hot‑swaps to bigger buffer when `capacity` exceeded. |
+| `ParticlePool.ts`      | Manages **TSL `StructuredArray`s** for pos/vel/etc.; double‑buffer if WebGL fallback.                       | Automatically pads to 16 bytes; hot‑swaps to bigger buffer when `capacity` exceeded. |
 | `Scheduler.ts`         | Inserts compute/render passes into dependency graph; merges non‑overlapping writes.         | Uses `navigator.gpu.getPreferredCanvasFormat()` for color attachments.               |
 | `ComponentRegistry.ts` | ECS data schema dictionary; autogenerates TS types + WGSL structs.                          | Schema file hashed to regenerate d.ts on change.                                     |
 | `UniformBridge.ts`     | Central pub/sub for UniformNodes coming from UI, OSC, MIDI, or GSAP.                        | Provides “topic” channels: `time`, `audioFFT`, `gaze`…                               |
