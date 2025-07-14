@@ -1,0 +1,258 @@
+---
+alwaysApply: false
+---
+# 🏁 Ultimate Single-Source-of-Truth  
+Three.js **r177 / r178+**  
+Node System • TSL • WebGPU •  • R3F / Drei  
+*(last freeze: 13 July 2025)*
+
+---
+
+## 📌 0. Version Pin & Import Map (r177/178 canonical)
+
+| What you need | Exact ESM path | Notes |
+|---|---|---|
+| Core | `import * as THREE from 'three';` |  |
+| **TSL + every node helper** | `import * as Nodes from 'three/tsl';` | single barrel file |
+| **NodeMaterial classes** | `import { MeshBasicNodeMaterial, MeshStandardNodeMaterial, MeshPhysicalNodeMaterial, LineBasicNodeMaterial, PointsNodeMaterial, SpriteNodeMaterial } from 'three/tsl';` | sub-classed from `NodeMaterial` |
+| **WebGPURenderer** | `import { WebGPURenderer } from 'three/webgpu';` | ES-module bundle |
+
+> ❗ The old path `examples/jsm/nodes/Nodes.js` **does not exist** in r177+.
+
+---
+
+## 🧬 1. Architecture Recap
+
+1. **Node** – atomic building block  
+2. **NodeBuilder** – compiles graph → WGSL or GLSL  
+3. **Material** – `NodeMaterial` subclasses expose **slots**  
+4. **Renderer** – `WebGPURenderer` (native) or `WebGLRenderer` (legacy bridge)
+
+---
+
+## 🎨 2. TSL (Three Shading Language) Complete API
+
+### 2.1 Type Factories
+
+| GLSL | TSL factory | Type returned |
+|---|---|---|
+| `float` | `Nodes.float( value )` | `Node<float>` |
+| `vec2` | `Nodes.vec2( x, y )` | `Node<vec2>` |
+| `vec3` | `Nodes.vec3( r, g, b )` | `Node<vec3>` |
+| `vec4` | `Nodes.vec4( r, g, b, a )` | `Node<vec4>` |
+| `mat3` / `mat4` | `Nodes.mat3` / `Nodes.mat4` | `Node<mat>` |
+| `int`, `ivec*`, `uint`, `uvec*`, `bool`, `bvec*` | same pattern |  |
+
+### 2.2 Math & Utility Functions (100 % list)
+
+`abs`, `sign`, `floor`, `ceil`, `round`, `trunc`, `fract`, `mod`, `min`, `max`, `clamp`, `saturate`, `mix`, `step`, `smoothstep`, `length`, `distance`, `dot`, `cross`, `normalize`, `faceforward`, `reflect`, `refract`, `pow`, `exp`, `exp2`, `log`, `log2`, `sqrt`, `inversesqrt`, `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2`, `discard`, `bypass`, `remap`, `hash`, `noise`, `voronoi`.
+
+### 2.3 Geometry & Scene Inputs
+
+| Node | Purpose |
+|---|---|
+| `positionLocal`, `positionWorld`, `positionView` | Vertex positions |
+| `normalLocal`, `normalWorld`, `normalView`, `normalViewDir` | Normals |
+| `tangentLocal`, `tangentView`, `tangentViewFrame`, `bitangentViewFrame` | TBN helpers |
+| `uv()`, `uv( index )`, `vertexColor`, `modelWorldMatrix`, `modelViewMatrix`, `cameraProjectionMatrix`, `cameraPosition`, `cameraNear`, `cameraFar`, `cameraLogDepth` | Camera & matrices |
+| `timer()`, `timerLocal()`, `timerDelta()` | Time helpers |
+
+### 2.4 Texture Helpers
+
+| Node | Signature | Added |
+|---|---|---|
+| `texture( tex, uv?, level? )` | 2D fetch | ✔ |
+| `textureLoad( tex, ivec2 )` | texelFetch | ✔ |
+| `textureBicubicLevel( tex, uv, level )` | High-quality LOD | **r178** |
+| `viewportSharedTexture()` / `viewportDepthTexture()` | Post reads | ✔ |
+
+### 2.5 Control-Flow & Custom Functions
+
+```js
+import { Fn, If, Loop, uint, uniform } from 'three/tsl';
+
+const pulse = Fn( () => {
+  const t = timer();
+  If( t.greaterThan( 1 ), () => t.assign( 0 ) );
+  return sin( t );
+} );
+
+const sumLoop = Fn( () => {
+  const sum = float( 0 );
+  Loop( { start: 0, end: uint( 10 ) }, ( i ) => sum.addAssign( float( i ) ) );
+  return sum;
+} );
+```
+
+## 🧩 3. Node Catalogue (r177/178 exhaustive)
+
+| Category | Nodes | Notes |
+|---|---|---|
+| **Primitives** | `float`, `vec*`, `int`, `uint`, `bool`, `mat*`, `uniform`, `attribute`, `buffer`, `storage` |  |
+| **Textures** | `texture`, `textureLoad`, `textureBicubicLevel`, `textureGather`, `viewportTexture`, `viewportDepthTexture` |  |
+| **Geometry** | `positionLocal`, `positionWorld`, `positionView`, `normal*`, `tangent*`, `uv*`, `vertexColor`, `model*` matrices |  |
+| **Lighting** | `lights()`, `pbr()`, `sheen()`, `clearcoat()`, `transmission()`, `iridescence()`, `anisotropy()` |  |
+| **Post-Processing** | `viewportSharedTexture()`, `viewportLinearDepth()`, `gaussianBlur`, `chromaticAberration`, `bloom`, `filmGrain` |  |
+| **Compute** | `compute( node, workgroupCount )`, `workgroupId`, `localId`, `globalId`, `storage( buffer, type, count )` | WebGPU only |
+| **Utilities** | `discard()`, `bypass( cond, a, b )`, `remap( value, inMin, inMax, outMin, outMax )`, `hash`, `noise`, `voronoi` |  |
+
+---
+
+## 🧪 4. NodeMaterial Slots (Complete)
+
+| Slot | Accepts | Description |
+|---|---|---|
+| `vertexNode` | `vec4` | Replace entire vertex shader |
+| `positionNode` | `vec3` | Vertex displacement (after MVP) |
+| `fragmentNode` | `vec4` | Replace entire fragment shader |
+| `colorNode` | `vec3` | Albedo |
+| `normalNode` | `vec3` | Normal map / bump |
+| `emissiveNode` | `vec3` | Emissive color |
+| `roughnessNode` | `float` | Roughness |
+| `metalnessNode` | `float` | Metallic |
+| `opacityNode` | `float` | Per-pixel opacity |
+| `alphaTestNode` | `float` | Discard threshold |
+| `depthNode` | `float` | Custom depth |
+| `envNode` | `vec3` | Environment map |
+| `lightsNode` | `Node` | Lighting model override |
+| `maskNode` | `float` | Discard mask (r177) |
+
+---
+
+## 🔄 5. WebGPU vs WebGL Compatibility Matrix
+
+| Feature | WebGPU (WGSL) | WebGL2 (GLSL) |
+|---|---|---|
+| NodeMaterial | Native | via `WebGL` |
+| Compute shaders | ✅ | ❌ |
+| Storage buffers | ✅ | ❌ |
+| `sampler2DArray` | ✅ | ✅ |
+| `sampler3D` | ✅ | ❌ |
+| `textureSample` in vertex | ✅ | Polyfilled |
+| Bind-group limits | 8× per stage | 4× (polyfilled) |
+
+---
+
+## ⚛️ 6. R3F / Drei Integration
+
+### 6.1 Install bleeding-edge
+
+```bash
+npm i three@0.178.0
+npm i @react-three/fiber@9.0.0-rc
+npm i @react-three/drei@9.0.0-rc
+```
+
+### 6.2 Register NodeMaterial
+
+```jsx
+import { extend } from '@react-three/fiber';
+import { MeshStandardNodeMaterial } from 'three/tsl';
+extend({ MeshStandardNodeMaterial });
+```
+
+### 6.3 Component Pattern
+
+```jsx
+import { Canvas } from '@react-three/fiber';
+import { useTexture } from '@react-three/drei';
+import * as Nodes from 'three/tsl';
+
+function ProceduralTorus() {
+  const [diff, norm] = useTexture(['d.jpg', 'n.jpg']);
+
+  const colorNode = Nodes.mul( 1.2, Nodes.texture( diff ) );
+  const normalNode = Nodes.normalMap( Nodes.texture( norm ) );
+
+  return (
+    <torusKnot args={[1, 0.4, 128, 32]}>
+      <meshStandardNodeMaterial
+        colorNode={colorNode}
+        normalNode={normalNode}
+        roughness={0.3}
+        metalness={0.8}
+      />
+    </torusKnot>
+  );
+}
+
+export default () => (
+  <Canvas renderer={() => new WebGPURenderer({ antialias: true })}>
+    <ProceduralTorus />
+  </Canvas>
+);
+```
+
+> R3F auto-awaits `renderer.init()` and mounts `<Suspense>` correctly.
+
+---
+
+## 🧰 7. Copy-Paste Boilerplates
+
+### 7.1 Minimal WebGPU + TSL
+
+```js
+import * as THREE from 'three';
+import * as Nodes from 'three/tsl';
+import { WebGPURenderer } from 'three/webgpu';
+
+const renderer = new WebGPURenderer({ antialias:true });
+await renderer.init();
+renderer.setSize(innerWidth,innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(70,innerWidth/innerHeight,0.1,10);
+camera.position.z = 3;
+
+const geo = new THREE.PlaneGeometry(2,2);
+const mat = new Nodes.MeshBasicNodeMaterial();
+mat.colorNode = Nodes.Fn(() => {
+  const u = Nodes.uv();
+  return Nodes.vec3(u.x, u.y, Nodes.sin(Nodes.timer()));
+})();
+
+scene.add(new THREE.Mesh(geo,mat));
+renderer.setAnimationLoop(() => renderer.render(scene,camera));
+```
+
+### 7.2 Compute + Storage Buffer
+
+```js
+import { storage, Fn, uint, Loop } from 'three/tsl';
+
+const buf = new THREE.StorageInstancedBufferAttribute(1024,4);
+const storageNode = storage(buf,'vec4',1024);
+
+const compute = Fn(() => {
+  const id = uint();
+  Loop({start:0,end:1024},() => {
+    storageNode.element(id).assign(Nodes.vec4(id,id,id,1));
+  });
+})().compute(1024);
+
+renderer.compute(compute);
+```
+
+---
+
+## 📚 8. Official References & Troubleshooting
+
+- **Wiki (conceptual)** → https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language  
+- **Examples** → https://threejs.org/examples/?q=webgpu  
+- **Build docs locally**  
+  ```bash
+  npm ci
+  npm run build-docs
+  open http://localhost:8080/docs_new/three/0.178/
+  ```
+
+| Symptom | Fix |
+|---|---|
+| `WebGPURenderer is not a constructor` | Use `three/webgpu` import & ensure **r177+**. |
+| TypeScript missing `WebGPURenderer` | Upgrade `@types/three` to 0.178 or later. |
+
+---
+
+> 🏁 Document frozen at **r177/178**; will be updated only when **r179** lands.
+```
