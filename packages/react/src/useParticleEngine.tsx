@@ -8,7 +8,7 @@ export default function useParticleEngine(opts: EngineOptions) {
   useEffect(() => {
     const canvas = opts.canvas;
     engineRef.current = new ParticleEngine({ canvas, maxParticles: opts.maxParticles });
-    engineRef.current.start();
+    engineRef.current.init().then(() => engineRef.current?.start());
     return () => engineRef.current?.dispose();
   }, [opts.canvas, opts.maxParticles]);
 
