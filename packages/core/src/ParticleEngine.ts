@@ -1,4 +1,4 @@
-import { WebGPURenderer } from 'three/examples/jsm/renderers/WebGPURenderer.js';
+import { WebGPURenderer } from 'three/webgpu';
 import { PerspectiveCamera, Scene } from 'three';
 import ParticlePool from './ParticlePool.js';
 import Scheduler from './Scheduler.js';
@@ -36,6 +36,10 @@ export default class ParticleEngine {
     this.pool = new ParticlePool(opts.maxParticles ?? 100000);
     this.scheduler = new Scheduler();
     this.uniformBridge = new UniformBridge();
+  }
+
+  async init() {
+    await this.renderer.init();
   }
 
   start() {
